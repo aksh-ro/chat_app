@@ -13,36 +13,7 @@ public class ServerThread extends Thread
     {
        //name = nm;
         socket = s;
-        try
-        {
-            is = socket.getInputStream();
-            BufferedReader buffer = new BufferedReader( new InputStreamReader(is));
-            String msg =buffer.readLine();
-            if((msg).equals("~"))
-            {
-                Server server = new Server();
-                String prmsn = server.login();
-                System.out.println("client logged in\n"+prmsn);
-                if((prmsn).equals("y"))
-                {
-                    os = socket.getOutputStream();
-                    PrintWriter pw = new PrintWriter(os,true);
-                    pw.println("allowed");
-                    
-                    
-                    this.start();
-                    System.out.println("Thread started");
-                }
-                else
-                {
-                    System.out.println("Sorry Server dont allow u to login");
-                }
-            }
-        }
-        catch(Exception e)
-        {
-                
-        }
+        this.start();
        
     }
     public void run()

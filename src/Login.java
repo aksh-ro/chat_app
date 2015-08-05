@@ -65,66 +65,54 @@ public class Login extends JFrame implements ActionListener
     
     public void actionPerformed(ActionEvent ae)
     {
-        String msg = ae.getActionCommand();
-        if(msg.equals("Login"))
+        String btn = ae.getActionCommand();
+        if(btn.equals("Login"))
         {
-            String querry = "select password from login where username = '"+t1.getText()+"'";
+        String uname = t1.getText();
+        String pass = p1.getText();
+        try
+        {
+            Socket clientSocket = new Socket("",socketNumber);
             
-            Conn c1 = new Conn();
-            try
+            String msg = "~"+uname+"^"+pass;
+            os = clientSocket.getOutputStream();
+            PrintWriter pw = new PrintWriter(os,true);
+            pw.println(msg);
+            InputStream is = clientSocket.getInputStream();
+            BufferedReader buffer = new BufferedReader(new InputStreamReader(is));
+            System.out.println("wating");
+            String sReply = buffer.readLine();
+            System.out.println("wating2");
+            pw.flush();
+            os.flush();
+            if((sReply).equals("allowed"))
             {
-                ResultSet rs = c1.s.executeQuery(querry);
-                if(rs.next())
-                {
-                    System.out.println(rs.getString("password"));
-                    if((rs.getString("password")).equals(p1.getText()))
-                    {
-                        JOptionPane.showMessageDialog(null,"user valid");
-                        Socket clientSocket = new Socket("",socketNumber);
-                        os = clientSocket.getOutputStream();
-                        PrintWriter pw = new PrintWriter(os,true);
-                        pw.println("~");
-                        
-                        InputStream is = clientSocket.getInputStream();
-                        BufferedReader buffer = new BufferedReader(new InputStreamReader(is));
-                        System.out.println("wating");
-                        String msg1 = buffer.readLine();
-                        System.out.println("wating2");
-                        pw.flush();
-                        os.flush();
-                        
-                        if((msg1).equals("allowed"))
-                        {
-                            l.dispose();
-                            new Client(t1.getText(),clientSocket).setVisible(true);
-                            System.out.println("done");
-                            
-                        }
-                        else
-                        {
-                            System.out.println("dint work");
-                        }
-                        
-                    }
-                    else
-                    {
-                        JOptionPane.showMessageDialog(null,"user invalid");
-                    }
-                }
-                else
-                    JOptionPane.showMessageDialog(null,"user invalid");
+                l.dispose();
+                new Client(uname,clientSocket).setVisible(true);
+                System.out.println("done");
             }
-            catch (Exception e)
+            else if((sReply).equals("incorrect"))
             {
-                e.printStackTrace();
-                System.out.println(e);
+                JOptionPane.showMessageDialog(null,"Username Password don't match");
             }
+            else if((sReply).equals("deniedS"))
+            {
+                JOptionPane.showMessageDialog(null,"Access Deined by server");
+            }
+            
         }
-        if(msg.equals("Register Now"))
+        catch(Exception e)
+        {
+            
+        }
+        }
+        if(btn.equals("Register Now"))
         {
             new Register().setVisible(true);
             l.dispose();
         }
+        
+        
     }
     
 }
